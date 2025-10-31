@@ -1,5 +1,5 @@
 import nextcord
-impost os
+import os
 from nextcord.ext import commands
 
 # ─────────────────────────────
