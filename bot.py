@@ -1,6 +1,7 @@
-import nextcord
 import os
+import nextcord
 from nextcord.ext import commands
+from keep_alive import keep_alive  # gọi webserver để giữ bot online
 
 # ─────────────────────────────
 #  Cấu hình cơ bản
@@ -24,7 +25,7 @@ role_name = "học sinh"  # tên role trong server
 # ─────────────────────────────
 @bot.event
 async def on_ready():
-    print(f" Bot đã đăng nhập thành công dưới tên: {bot.user}")
+    print(f"✅ Bot đã đăng nhập thành công dưới tên: {bot.user}")
 
 # ─────────────────────────────
 #  Khi có người mới vào server
@@ -33,10 +34,10 @@ async def on_ready():
 async def on_member_join(member):
     try:
         await member.send(
-            f"Chào {member.name}! Trả lời đúng câu hỏi sau để vào server:\n {question}"
+            f"Chào {member.name}! Trả lời đúng câu hỏi sau để vào server:\n{question}"
         )
     except:
-        print(f"Không thể gửi DM cho {member.name} (có thể họ chặn DM)")
+        print(f"⚠️ Không thể gửi DM cho {member.name} (có thể họ chặn DM)")
 
 # ─────────────────────────────
 # 💬 Khi bot nhận tin nhắn DM
@@ -45,17 +46,17 @@ async def on_member_join(member):
 async def on_message(message):
     if message.guild is None and not message.author.bot:  # nếu là DM riêng
         if message.content.lower().strip() == answer:
-            guild = bot.guilds[0]  # nếu bot chỉ có trong 1 server
+            guild = bot.guilds[0]  # nếu bot chỉ trong 1 server
             role = nextcord.utils.get(guild.roles, name=role_name)
             member = guild.get_member(message.author.id)
 
             if role and member:
                 await member.add_roles(role)
-                await message.channel.send(" Chính xác! Bạn đã được cấp quyền truy cập server.")
+                await message.channel.send("✅ Chính xác! Bạn đã được cấp quyền truy cập server.")
             else:
-                await message.channel.send(" Không tìm thấy role hoặc thành viên trong server.")
+                await message.channel.send("⚠️ Không tìm thấy role hoặc thành viên trong server.")
         else:
-            await message.channel.send("Sai rồi  thử lại nhé.")
+            await message.channel.send("❌ Sai rồi, thử lại nhé.")
 
     await bot.process_commands(message)
 
@@ -64,10 +65,10 @@ async def on_message(message):
 # ─────────────────────────────
 @bot.command()
 async def test(ctx):
-    await ctx.send(f" Bot đang hoạt động tốt, {ctx.author.mention}!")
+    await ctx.send(f"🤖 Bot đang hoạt động tốt, {ctx.author.mention}!")
 
 # ─────────────────────────────
-# 🔑 Token bot
+#  Giữ bot online (cho Replit)
 # ─────────────────────────────
-
-bot.run(os.getenv("DISCORD_TOKEN"))
+keep_alive()
+bot.run(os.getenv("TOKEN"))
